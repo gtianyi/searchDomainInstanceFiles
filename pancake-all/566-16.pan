@@ -1,0 +1,35 @@
+16
+starting positions pancake:
+7
+16
+11
+14
+15
+4
+10
+12
+3
+1
+8
+13
+6
+5
+2
+9
+end positions pancake:
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
