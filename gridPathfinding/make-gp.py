@@ -13,10 +13,7 @@ import argparse
 from random import seed
 from random import randrange
 import random
-
-researchHome = "/home/aifs1/gu/phd/research/workingPaper"
-# researchHome = "/home/aifs1/gu/Downloads"
-
+import collections
 
 def parseArugments():
 
@@ -55,28 +52,23 @@ def parseArugments():
         action='store',
         dest='obstacleField',
         help='obstacle field range: 0.1(default)',
-        default=0.1)
+        default='0.1')
 
     parser.add_argument(
         '-d',
         action='store',
         dest='desity',
         help='obstacle field density: 0.25(default)',
-        default=0.25)
+        default='0.25')
 
     return parser
 
 
-def main():
-
-    parser = parseArugments()
-    args = parser.parse_args()
-    print(args)
-
+def generateRandomMap(args, curSeed):
     r, c = args.row, args.col
-    seed(args.seed)
+    seed(curSeed)
 
-    outMap = [['_']*c for _ in range(r)]
+    outMap = [['_'] * c for _ in range(r)]
 
     start = (randrange(r), 0)
     goal = (randrange(r), c-1)
@@ -87,24 +79,78 @@ def main():
     colRange = range(c)
 
     if args.mapType == 'goalObstacle':
-        obsColStart = int((1 - args.obstacleField) * c)
+        obsColStart = int((1 - float(args.obstacleField)) * c)
         colRange = range(obsColStart, c)
 
     if args.mapType == 'startObstacle':
-        obsColEnd = int(args.obstacleField * c)
+        obsColEnd = int(float(args.obstacleField) * c)
         colRange = range(obsColEnd)
 
     for i in range(r):
         for j in colRange:
             if outMap[i][j] == '@' or outMap[i][j] == '*':
                 continue
-            if random.uniform(0, 1) <= args.desity:
+            if random.uniform(0, 1) <= float(args.desity):
                 outMap[i][j] = '#'
 
+    return outMap, start, goal
+
+def printMap(outMap, args, solutionLength):
+    r, c = args.row, args.col
     print(c)
     print(r)
     for i in range(r):
         print("".join(outMap[i]))
+    print(solutionLength)
+
+def bfs(outMap, start, goal):
+    queue = collections.deque([start])
+    dist = {start : 0}
+
+    dx = [1, -1, 0, 0]
+    dy = [0, 0, 1, -1]
+
+    while queue:
+        cur = queue.popleft()
+
+        if cur == goal:
+            return dist[cur]
+
+        for i in range(4):
+            newX = cur[0] + dx[i]
+            newY = cur[1] + dy[i]
+
+            if not isValid(newX, newY, outMap):
+                continue
+            if (newX, newY) in dist:
+                continue
+            queue.append((newX, newY))
+            dist[(newX, newY)] = dist[cur] + 1
+
+    return -1
+
+def isValid(x, y, outMap):
+    return 0 <= x < len(outMap) and\
+           0 <= y < len(outMap[0]) and\
+           outMap[x][y] != '#'
+
+def main():
+    parser = parseArugments()
+    args = parser.parse_args()
+    print(args)
+
+    curSeed = args.seed
+    outMap, start, goal = generateRandomMap(args, curSeed)
+    solutionLength = bfs(outMap, start, goal)
+
+    i = 0
+    while solutionLength == -1:
+        curSeed = args.seed * 100 + i
+        outMap, start, goal = generateRandomMap(args, curSeed)
+        solutionLength = bfs(outMap, start, goal)
+        i += 1
+
+    printMap(outMap, args, solutionLength)
 
 if __name__ == '__main__':
     main()
