@@ -24,21 +24,21 @@ def parseArugments():
         action='store',
         dest='row',
         help='row nums: 10(default)',
-        default=10)
+        default='10')
 
     parser.add_argument(
         '-c',
         action='store',
         dest='col',
         help='col nums: 100(default)',
-        default=100)
+        default='100')
 
     parser.add_argument(
         '-s',
         action='store',
         dest='seed',
         help='random seed: 31(default)',
-        default=31)
+        default='31')
 
     parser.add_argument(
         '-t',
@@ -65,7 +65,7 @@ def parseArugments():
 
 
 def generateRandomMap(args, curSeed):
-    r, c = args.row, args.col
+    r, c = int(args.row), int(args.col)
     seed(curSeed)
 
     outMap = [['_'] * c for _ in range(r)]
@@ -96,7 +96,7 @@ def generateRandomMap(args, curSeed):
     return outMap, start, goal
 
 def printMap(outMap, args, solutionLength):
-    r, c = args.row, args.col
+    r, c = int(args.row), int(args.col)
     print(c)
     print(r)
     for i in range(r):
@@ -137,15 +137,15 @@ def isValid(x, y, outMap):
 def main():
     parser = parseArugments()
     args = parser.parse_args()
-    print(args)
+    # print(args)
 
-    curSeed = args.seed
+    curSeed = int(args.seed)
     outMap, start, goal = generateRandomMap(args, curSeed)
     solutionLength = bfs(outMap, start, goal)
 
     i = 0
     while solutionLength == -1:
-        curSeed = args.seed * 100 + i
+        curSeed = int(args.seed) * 100 + i
         outMap, start, goal = generateRandomMap(args, curSeed)
         solutionLength = bfs(outMap, start, goal)
         i += 1
