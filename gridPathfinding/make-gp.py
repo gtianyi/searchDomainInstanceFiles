@@ -78,7 +78,7 @@ def main():
 
     outMap = [['_']*c for _ in range(r)]
 
-    start = (0, randrange(r))
+    start = (randrange(r), 0)
     goal = (randrange(r), c-1)
 
     outMap[start[0]][start[1]] = '@'
@@ -87,11 +87,11 @@ def main():
     colRange = range(c)
 
     if args.mapType == 'goalObstacle':
-        obsColStart = (1 - args.obstacleField) * c
+        obsColStart = int((1 - args.obstacleField) * c)
         colRange = range(obsColStart, c)
 
     if args.mapType == 'startObstacle':
-        obsColEnd = args.obstacleField * c
+        obsColEnd = int(args.obstacleField * c)
         colRange = range(obsColEnd)
 
     for i in range(r):
@@ -104,4 +104,7 @@ def main():
     print(c)
     print(r)
     for i in range(r):
-        print("".join(outMap[r]))
+        print("".join(outMap[i]))
+
+if __name__ == '__main__':
+    main()
