@@ -23,15 +23,15 @@ def parseArugments():
         '-r',
         action='store',
         dest='row',
-        help='row nums: 10(default)',
-        default='10')
+        help='row nums: 100(default)',
+        default='100')
 
     parser.add_argument(
         '-c',
         action='store',
         dest='col',
-        help='col nums: 100(default)',
-        default='100')
+        help='col nums: 1000(default)',
+        default='1000')
 
     parser.add_argument(
         '-s',
