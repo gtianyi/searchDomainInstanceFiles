@@ -124,6 +124,7 @@ def printMap(outMap, args, solutionLength):
     for i in range(r):
         print("".join(outMap[i]))
     print(solutionLength)
+    print(args.tarPitCost)
 
 def bfs(outMap, start, goal, tarPitCost):
     openList = [(0, start)]
