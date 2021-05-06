@@ -128,7 +128,7 @@ def printMap(outMap, args, solutionLength):
 
 def bfs(outMap, start, goal, tarPitCost):
     openList = [(0, start)]
-    closed = set([start])
+    closed = {start: 0}
 
     dx = [1, -1, 0, 0]
     dy = [0, 0, 1, -1]
@@ -145,11 +145,14 @@ def bfs(outMap, start, goal, tarPitCost):
 
             if not isValid(newX, newY, outMap):
                 continue
-            if (newX, newY) in closed:
-                continue
+
             cost = cur[0] + getCost(cur[1][0], cur[1][1], outMap, tarPitCost)
+
+            if (newX, newY) in closed and closed[(newX, newY)] <= cost:
+                continue
+
             heapq.heappush(openList, (cost, (newX, newY)))
-            closed.add((newX, newY))
+            closed[(newX, newY)] = cost
 
     return -1
 
