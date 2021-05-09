@@ -130,12 +130,16 @@ def generateCheckerBoard(args, curSeed):
     outMap[goal[0]][goal[1]] = '*'
 
     colRange = range(c)
+    obsColStart = -1
+    obsColEnd = -1
 
     if args.mapType == 'goalObstacle':
         obsColStart = int((1 - float(args.obstacleField)) * c)
+        obsColEnd = c
         colRange = range(obsColStart, c)
 
     if args.mapType == 'startObstacle':
+        obsColStart = 5
         obsColEnd = int(float(args.obstacleField) * c + 5)
         colRange = range(5, obsColEnd)
 
@@ -144,8 +148,38 @@ def generateCheckerBoard(args, curSeed):
             if outMap[i][j] == '@' or outMap[i][j] == '*':
                 continue
 
-            if i%2 == 0 and j%2 ==0:
+            if i == 0 and j != obsColStart and (j - obsColStart)% 2 == 0:
                 outMap[i][j] = '$'
+            elif i%2 == 0 and j == obsColStart:
+                outMap[i][j] = '$'
+
+    step = 0
+    for j in colRange:
+        if outMap[0][j] != '$':
+            continue
+        step += 1
+        curRow, curCol = 0, j
+        curStep = step
+        while curRow < r and curCol < obsColEnd:
+            if curStep % 2 == 0:
+                outMap[curRow][curCol] = '$'
+            curRow += 1
+            curCol += 1
+            curStep += 1
+
+    step = 0
+    for i in range(2, r):
+        if outMap[i][obsColStart] != '$':
+            continue
+        step += 1
+        curStep = step
+        curRow, curCol = i, obsColStart
+        while curRow < r and curCol < obsColEnd:
+            if curStep%2 ==0:
+                outMap[curRow][curCol] = '$'
+            curRow += 1
+            curCol += 1
+            curStep += 1
 
     return outMap, start, goal
 
