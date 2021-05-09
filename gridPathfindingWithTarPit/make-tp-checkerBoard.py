@@ -135,13 +135,17 @@ def generateCheckerBoard(args, curSeed):
 
     if args.mapType == 'goalObstacle':
         obsColStart = int((1 - float(args.obstacleField)) * c)
-        obsColEnd = c
-        colRange = range(obsColStart, c)
+        obsColEnd = c-1
 
     if args.mapType == 'startObstacle':
         obsColStart = 5
         obsColEnd = int(float(args.obstacleField) * c + 5)
-        colRange = range(5, obsColEnd)
+
+    if args.mapType == 'uniformObstacle':
+        obsColStart = 5
+        obsColEnd = c-1
+
+    colRange = range(obsColStart, obsColEnd)
 
     for i in range(r):
         for j in colRange:
