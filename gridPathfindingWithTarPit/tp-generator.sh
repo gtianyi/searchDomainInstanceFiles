@@ -1,8 +1,8 @@
 #!/bin/bash
 
-mkdir -p mixed_big_checkerboard_corridor
+mkdir -p only_corridor_big_checkerboard
 for (( i=1; i <= 200; i++ )); do
-    python make-tp-checkerBoard-and-obs.py -r 50 -c 200 -s $i -pc 1000 > ./mixed_big_checkerboard_corridor/"$i.tp"; 
+    python make-tp-checkerBoard-and-obs.py -r 50 -c 200 -s $i -pc 1000 > ./only_corridor_big_checkerboard/"$i.tp"; 
 done
 
 #mkdir -p startObstacle_big_checkerboard
