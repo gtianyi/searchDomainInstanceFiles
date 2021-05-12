@@ -16,6 +16,7 @@ from random import randrange
 import random
 import heapq
 
+
 def parseArugments():
 
     parser = argparse.ArgumentParser(description='make-gp')
@@ -79,7 +80,11 @@ def generateCheckerBoardAndObs(args, curSeed):
     outMap = [['_'] * c for _ in range(r)]
 
     start = (randrange(r), 0)
-    goal = (randrange(r), c-1)
+    goal = (randrange((r - r//4)+1, r-1), c-1)
+    entrance = (randrange(r//2+1, r - r//4),
+                int((1 - float(args.obstacleField)) * c))
+    print("goal", goal)
+    print("entrance", entrance)
 
     outMap[start[0]][start[1]] = '@'
     outMap[goal[0]][goal[1]] = '*'
@@ -93,20 +98,45 @@ def generateCheckerBoardAndObs(args, curSeed):
     pitColRange = range(pitColStart, pitColEnd)
 
     for i in range(r):
+        if i > goal[0] + 1:
+            outMap[i][c-1] = '$'
+        if i == goal[0] + 1:
+            outMap[i][c-1] = '#'
+
         for j in obsColRange:
-            if outMap[i][j] == '@' or outMap[i][j] == '*':
+            if outMap[i][j] == '@' or \
+                    outMap[i][j] == '#' or \
+                    i < r//2 or \
+                    (i,j) == entrance:
                 continue
-            if random.uniform(0, 1) <= float(args.desity):
+
+            if outMap[i][j] == '*':
+                outMap[i+1][j] = '#'
+                continue
+
+            if i in [r//2, r-1]:
                 outMap[i][j] = '#'
+                continue
+
+            if j != obsColStart + 1 and i not in [r//2 + 1, r-2]:
+                outMap[i][j] = '#'
+                continue
+
+            if i in [r//2 + 1, r-2] and j == obsColStart:
+                outMap[i][j] = '#'
+                continue
+
+            if i == r-2:
+                outMap[i][j] = '$'
 
     for i in range(r):
         for j in pitColRange:
             if outMap[i][j] == '@' or outMap[i][j] == '*':
                 continue
 
-            if i == 0 and j != pitColStart and (j - pitColStart)% 2 == 0:
+            if i == 0 and j != pitColStart and (j - pitColStart) % 2 == 0:
                 outMap[i][j] = '$'
-            elif i%2 == 0 and j == pitColStart:
+            elif i % 2 == 0 and j == pitColStart:
                 outMap[i][j] = '$'
 
     step = 0
@@ -131,12 +161,13 @@ def generateCheckerBoardAndObs(args, curSeed):
         curStep = step
         curRow, curCol = i, pitColStart
         while curRow < r and curCol < pitColEnd:
-            if curStep%2 ==0:
+            if curStep % 2 == 0:
                 outMap[curRow][curCol] = '$'
             curRow += 1
             curCol += 1
             curStep += 1
     return outMap, start, goal
+
 
 def printMap(outMap, args, solutionLength):
     r, c = int(args.row), int(args.col)
@@ -146,6 +177,7 @@ def printMap(outMap, args, solutionLength):
         print("".join(outMap[i]))
     print(solutionLength)
     print(args.tarPitCost)
+
 
 def bfs(outMap, start, goal, tarPitCost):
     openList = [(0, start)]
@@ -177,15 +209,18 @@ def bfs(outMap, start, goal, tarPitCost):
 
     return -1
 
+
 def isValid(x, y, outMap):
     return 0 <= x < len(outMap) and\
-           0 <= y < len(outMap[0]) and\
-           outMap[x][y] != '#'
+        0 <= y < len(outMap[0]) and\
+        outMap[x][y] != '#'
+
 
 def getCost(x, y, outMap, tarPitCost):
     if outMap[x][y] == '$':
         return tarPitCost
     return 1
+
 
 def main():
     parser = parseArugments()
@@ -196,14 +231,14 @@ def main():
     outMap, start, goal = generateCheckerBoardAndObs(args, curSeed)
     solutionLength = bfs(outMap, start, goal, int(args.tarPitCost))
 
+    # i = 0
+    # while solutionLength == -1:
+        # curSeed = int(args.seed) * 100 + i
+        # outMap, start, goal = generateCheckerBoardAndObs(args, curSeed)
+        # solutionLength = bfs(outMap, start, goal, int(args.tarPitCost))
+        # i += 1
 
-    i = 0
-    while solutionLength == -1:
-        curSeed = int(args.seed) * 100 + i
-        outMap, start, goal = generateCheckerBoardAndObs(args, curSeed)
-        solutionLength = bfs(outMap, start, goal, int(args.tarPitCost))
-        i += 1
-
+    # printMap(outMap, args, -1)
     printMap(outMap, args, solutionLength)
 
 if __name__ == '__main__':
