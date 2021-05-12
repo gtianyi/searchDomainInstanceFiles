@@ -83,8 +83,6 @@ def generateCheckerBoardAndObs(args, curSeed):
     goal = (randrange((r - r//4)+1, r-1), c-1)
     entrance = (randrange(r//2+1, r - r//4),
                 int((1 - float(args.obstacleField)) * c))
-    print("goal", goal)
-    print("entrance", entrance)
 
     outMap[start[0]][start[1]] = '@'
     outMap[goal[0]][goal[1]] = '*'
@@ -168,6 +166,64 @@ def generateCheckerBoardAndObs(args, curSeed):
             curStep += 1
     return outMap, start, goal
 
+def generateOnlyCorridor(args, curSeed):
+    r, c = int(args.row), int(args.col)
+    seed(curSeed)
+
+    outMap = [['_'] * c for _ in range(r)]
+
+    start = (randrange(r), 0)
+    goal = (randrange((r - r//4)+1, r-1), c-1)
+    entrance = (randrange(r//2+1, r - r//4),
+                int((1 - float(args.obstacleField)) * c))
+
+    outMap[start[0]][start[1]] = '@'
+    outMap[goal[0]][goal[1]] = '*'
+
+    obsColStart = int((1 - float(args.obstacleField)) * c)
+    obsColEnd = c-1
+    obsColRange = range(obsColStart, obsColEnd)
+
+    pitColEnd = int(float(args.obstacleField) * c + 5)
+    pitColStart = 5
+    pitColRange = range(pitColStart, pitColEnd)
+
+    for i in range(r):
+        if i > goal[0] + 1:
+            outMap[i][c-1] = '$'
+        if i == goal[0] + 1:
+            outMap[i][c-1] = '#'
+
+        for j in obsColRange:
+            if outMap[i][j] == '@' or \
+                    outMap[i][j] == '#' or \
+                    i < r//2 or \
+                    (i,j) == entrance:
+                continue
+
+            if outMap[i][j] == '*':
+                outMap[i+1][j] = '#'
+                continue
+
+            if i in [r//2, r-1]:
+                outMap[i][j] = '#'
+                continue
+
+            if j != obsColStart + 1 and i not in [r//2 + 1, r-2]:
+                outMap[i][j] = '#'
+                continue
+
+            if i in [r//2 + 1, r-2] and j == obsColStart:
+                outMap[i][j] = '#'
+                continue
+
+            if i == r-2:
+                outMap[i][j] = '$'
+
+    return outMap, start, goal
+
+
+
 
 def printMap(outMap, args, solutionLength):
     r, c = int(args.row), int(args.col)
@@ -228,7 +284,8 @@ def main():
     # print(args)
 
     curSeed = int(args.seed)
-    outMap, start, goal = generateCheckerBoardAndObs(args, curSeed)
+    # outMap, start, goal = generateCheckerBoardAndObs(args, curSeed)
+    outMap, start, goal = generateOnlyCorridor(args, curSeed)
     solutionLength = bfs(outMap, start, goal, int(args.tarPitCost))
 
     # i = 0
