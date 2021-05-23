@@ -13,6 +13,7 @@ __author__ = 'TianyiGu'
 import argparse
 from random import seed
 from random import randrange
+from itertools import chain
 import random
 import heapq
 
@@ -45,7 +46,7 @@ def parseArugments():
         '-t',
         action='store',
         dest='mapType',
-        help='map type: goalObstacle, startObstacle(default), uniform',
+        help='map type: goalObstacle, startObstacle(default), uniform, startandgoal',
         default='goalObstacle')
 
     parser.add_argument(
@@ -117,34 +118,7 @@ def generateRandomMap(args, curSeed):
 
     return outMap, start, goal
 
-def generateCheckerBoard(args, curSeed):
-    r, c = int(args.row), int(args.col)
-    seed(curSeed)
-
-    outMap = [['_'] * c for _ in range(r)]
-
-    start = (randrange(r), 0)
-    goal = (randrange(r), c-1)
-
-    outMap[start[0]][start[1]] = '@'
-    outMap[goal[0]][goal[1]] = '*'
-
-    colRange = range(c)
-    obsColStart = -1
-    obsColEnd = -1
-
-    if args.mapType == 'goalObstacle':
-        obsColStart = int((1 - float(args.obstacleField)) * c)
-        obsColEnd = c-1
-
-    if args.mapType == 'startObstacle':
-        obsColStart = 5
-        obsColEnd = int(float(args.obstacleField) * c + 5)
-
-    if args.mapType == 'uniformObstacle':
-        obsColStart = 5
-        obsColEnd = c-1
-
+def createCheckerBoard(outMap, r, c, obsColStart, obsColEnd):
     colRange = range(obsColStart, obsColEnd)
 
     for i in range(r):
@@ -184,6 +158,42 @@ def generateCheckerBoard(args, curSeed):
             curRow += 1
             curCol += 1
             curStep += 1
+
+
+
+def generateCheckerBoard(args, curSeed):
+    r, c = int(args.row), int(args.col)
+    seed(curSeed)
+
+    outMap = [['_'] * c for _ in range(r)]
+
+    start = (randrange(r), 0)
+    goal = (randrange(r), c-1)
+
+    outMap[start[0]][start[1]] = '@'
+    outMap[goal[0]][goal[1]] = '*'
+
+    obsColStart = -1
+    obsColEnd = -1
+
+    if args.mapType == 'goalObstacle':
+        obsColStart = int((1 - float(args.obstacleField)) * c)
+        obsColEnd = c-1
+
+    if args.mapType in ['startObstacle', 'startObsAndGoalObs']:
+        obsColStart = 5
+        obsColEnd = int(float(args.obstacleField) * c + 5)
+
+    if args.mapType == 'uniformObstacle':
+        obsColStart = 5
+        obsColEnd = c-1
+
+    createCheckerBoard(outMap, r, c, obsColStart, obsColEnd)
+
+    if args.mapType == 'startObsAndGoalObs':
+        obsColStart = int((1 - float(args.obstacleField)) * c)
+        obsColEnd = c-1
+        createCheckerBoard(outMap, r, c, obsColStart, obsColEnd)
 
     return outMap, start, goal
 
