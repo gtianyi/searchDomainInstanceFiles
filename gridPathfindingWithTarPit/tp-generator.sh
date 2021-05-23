@@ -1,9 +1,19 @@
 #!/bin/bash
 
-mkdir -p only_corridor_big_checkerboard
+mkdir -p mixed_big_checkerboard_corridor
 for (( i=1; i <= 200; i++ )); do
-    python make-tp-checkerBoard-and-obs.py -r 50 -c 200 -s $i -pc 1000 > ./only_corridor_big_checkerboard/"$i.tp"; 
+    python make-tp-checkerBoard-and-obs.py -r 50 -c 200 -s $i -pc 1000 > ./mixed_big_checkerboard_corridor/"$i.tp"; 
 done
+
+#mkdir -p startObsAndGoalObs_big_checkerboard
+#for (( i=1; i <= 100; i++ )); do
+    #python make-tp-checkerBoard.py -r 50 -c 200 -t startObsAndGoalObs -s $i -pc 1000 > ./startObsAndGoalObs_big_checkerboard/"$i.tp"; 
+#done
+
+#mkdir -p only_corridor_big_checkerboard
+#for (( i=1; i <= 200; i++ )); do
+    #python make-tp-checkerBoard-and-obs.py -r 50 -c 200 -s $i -pc 1000 > ./only_corridor_big_checkerboard/"$i.tp"; 
+#done
 
 #mkdir -p startObstacle_big_checkerboard
 #for (( i=1; i <= 100; i++ )); do
