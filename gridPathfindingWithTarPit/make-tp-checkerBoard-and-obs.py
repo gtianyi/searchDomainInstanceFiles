@@ -173,7 +173,7 @@ def generateOnlyCorridor(args, curSeed):
     outMap = [['_'] * c for _ in range(r)]
 
     start = (randrange(r), 0)
-    goal = (randrange((r - r//4)+1, r-1), c-1)
+    goal = (randrange((r - r//4)+1, r-2), c-1)
     entrance = (randrange(r//2+1, r - r//4),
                 int((1 - float(args.obstacleField)) * c))
 
@@ -193,6 +193,9 @@ def generateOnlyCorridor(args, curSeed):
             outMap[i][c-1] = '$'
         if i == goal[0] + 1:
             outMap[i][c-1] = '#'
+        if i == r//2:
+            outMap[i][c-1] = '#'
+
 
         for j in obsColRange:
             if outMap[i][j] == '@' or \
